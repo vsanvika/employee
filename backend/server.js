@@ -56,6 +56,6 @@ app.use((err, req, res, next) => {
   console.error("Internal Server Error:", err.stack);
   res.status(err.status || 500).json({
     message: "An internal error occurred",
-    error: process.env.NODE_ENV === 'production' ? {} : err.message
+    error: err.message
   });
 });
