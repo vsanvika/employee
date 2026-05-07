@@ -1,12 +1,14 @@
 import "dotenv/config";
 import exp from "express";
-import { connect } from "mongoose";
+import mongoose from "mongoose";
 import { empRoute } from "./API/empApp.js";
 import cors from "cors";
 
+console.log("Starting server...");
+
 const app = exp();
 
-//add cors middleware
+// CORS configuration
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN
@@ -15,43 +17,45 @@ app.use(
   }),
 );
 
-//body parser middleware
 app.use(exp.json());
 
-//emp api middleware
+// API Routes
 app.use("/emp-api", empRoute);
 
-//health check endpoint
+// Health check endpoint (Render uses this to see if the app is alive)
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Employee API is running" });
+  res.status(200).json({ 
+    status: "online",
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected"
+  });
 });
 
-//DB connection
 const PORT = process.env.PORT || 4000;
-const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://localhost:27017/empdb";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/empdb";
 
+// DB connection logic
 const connectDB = async () => {
   try {
-    await connect(MONGO_URI);
-    console.log("DB connected");
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ MongoDB Connected Successfully");
   } catch (err) {
-    console.log("err in DB connection", err.message);
-    process.exit(1);
+    console.error("❌ MongoDB Connection Error:", err.message);
+    console.log("Ensure MONGO_URI is set correctly in Render environment variables.");
+    // We don't exit here so the server can still respond to health checks
   }
 };
 
-// Connect to DB first, then start server
-connectDB().then(() => {
-  app.listen(PORT, () => console.log(`server listening on port ${PORT}..`));
+// Start the server immediately
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  connectDB();
 });
 
-//error handling middleware
+// Global error handler
 app.use((err, req, res, next) => {
-  console.log("err in middleware:", err.message);
-
+  console.error("Internal Server Error:", err.stack);
   res.status(err.status || 500).json({
-    message: "error",
-    reason: err.message,
+    message: "An internal error occurred",
+    error: process.env.NODE_ENV === 'production' ? {} : err.message
   });
 });
