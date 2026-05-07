@@ -33,15 +33,18 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 4000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/empdb";
 
+// Disable buffering so we get immediate errors if not connected
+mongoose.set('bufferCommands', false);
+
 // DB connection logic
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    });
     console.log("✅ MongoDB Connected Successfully");
   } catch (err) {
     console.error("❌ MongoDB Connection Error:", err.message);
-    console.log("Ensure MONGO_URI is set correctly in Render environment variables.");
-    // We don't exit here so the server can still respond to health checks
   }
 };
 
