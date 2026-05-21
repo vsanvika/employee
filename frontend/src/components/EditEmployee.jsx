@@ -7,26 +7,28 @@ function EditEmployee() {
   const {
      register,
       handleSubmit,
-    formState:{errors},
     setValue
    } = useForm()
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
     //get empobj from navigate hook
     const { state } = useLocation();
      const navigate = useNavigate();
 
     useEffect(()=>{
-      setValue("name",state.name);
-      setValue("email",state.email);
-      setValue("mobile",state.mobile);
-      setValue("designation",state.designation);
-      setValue("companyName",state.companyName);
-    }, []);
+      if (state) {
+        setValue("name",state.name);
+        setValue("email",state.email);
+        setValue("mobile",state.mobile);
+        setValue("designation",state.designation);
+        setValue("companyName",state.companyName);
+      }
+    }, [state, setValue]);
 
     //modify the form
     const saveModifiedEmp = async (modifiedEmp) => {
       //make http put req
-      const res=await axios.put(`${import.meta.env.VITE_API_URL}/emp-api/employees/${state._id}`,modifiedEmp);
+      const res=await axios.put(`${API_URL}/emp-api/employees/${state._id}`,modifiedEmp);
       if(res.status===200){
         //navigate list of users
         navigate("/list");
@@ -40,32 +42,27 @@ function EditEmployee() {
       <form className=" max-w-md mx-auto mt-10"  onSubmit={handleSubmit(saveModifiedEmp)} >
         <input
           type="text"
-          placeholder="Enter name "
           {...register("name")}
           className="mb-3 border border-2 p-3 w-full rounded-2xl"
         />
         <input
           type="email"
-          placeholder="Enter Email "
           {...register("email")}
           className="mb-3 border border-2 p-3 w-full rounded-2xl"
         />
 
         <input
           type="number"
-          placeholder="Enter mobile number"
           {...register("mobile")}
           className="mb-3 border border-2 p-3 w-full rounded-2xl"
         />
         <input
           type="text"
-          placeholder="Enter designation"
           {...register("designation")}
           className="mb-3 border border-2 p-3 w-full rounded-2xl"
         />
         <input
           type="text"
-          placeholder="Enter name of the company"
           {...register("companyName")}
           className="mb-3 border border-2 p-3 w-full rounded-2xl"
         />

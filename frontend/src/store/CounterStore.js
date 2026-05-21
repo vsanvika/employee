@@ -9,9 +9,9 @@ export const useCounterStore=create((set)=>({
     //add user state (name,age ,email)
     user:{name:"ravi",email:"ravi@gmail.com", age:16},
     //function to change email
-    changeEmail:()=>set({...user,email:"ravi123@gmail.com"}),
+    changeEmail:()=>set(state=>({user:{...state.user,email:"ravi123@gmail.com"}})),
     //function to change name and age
-    changeNameAndAge:()=>set({...user,name:"ravi kumar", age:17}),
+    changeNameAndAge:()=>set(state=>({user:{...state.user,name:"ravi kumar", age:17}})),
     //function to modify the state
     incrementCounter:()=>set(state=>({newCounter:state.newCounter+1})),
     incrementCounter1:()=>set(state=>({newCounter1:state.newCounter1+1})),

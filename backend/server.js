@@ -9,11 +9,13 @@ console.log("Starting server...");
 const app = exp();
 
 // CORS configuration
+const defaultOrigins = ["http://localhost:5173"];
+const envOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : [];
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(",")
-      : ["http://localhost:5173"],
+    origin: allowedOrigins,
   }),
 );
 

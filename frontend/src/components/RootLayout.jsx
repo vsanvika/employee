@@ -1,11 +1,11 @@
 import Header from './Header'
-import {Outlet} from 'react-router'
+import { Outlet } from 'react-router'
 
 function RootLayout() {
   return (
-    <div>
+    <div style={{ minHeight: '100vh' }}>
       <Header />
-      <div className='min-h-screen mx-20 p-20 bg-gray-100'>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
         <Outlet />
       </div>
     </div>
